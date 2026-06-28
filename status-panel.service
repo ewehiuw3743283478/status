@@ -1,0 +1,11 @@
+[Unit]
+Description=status-panel
+
+[Service]
+Type=forking
+ExecStart=/opt/status/run.sh
+ExecReload=/opt/status/restart.sh
+ExecStop=/opt/status/stop.sh
+
+[Install]
+WantedBy=multi-user.target

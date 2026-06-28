@@ -1,0 +1,11 @@
+node_modules
+*.db
+package-lock.json
+token.json
+.git
+.github
+dist
+status-agent
+terminals
+main.zip
+neko-status

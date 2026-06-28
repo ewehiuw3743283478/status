@@ -1,0 +1,512 @@
+:root {
+    --page-gap: 20px;
+    --card-radius: 12px;
+    --page-bg: #eef1f6;
+    --glass-bg: #f8f9fc;
+    --glass-border: #e2e6ef;
+    --content-max: 1320px;
+    --shadow-sm: 0 1px 2px rgba(60, 64, 67, 0.18), 0 1px 3px 1px rgba(60, 64, 67, 0.1);
+    --shadow-md: 0 4px 16px rgba(60, 64, 67, 0.12);
+}
+
+.mdui-theme-layout-dark {
+    --page-bg: #12141c;
+    --glass-bg: #1e2028;
+    --glass-border: #2c3040;
+}
+
+html {
+    background-color: var(--page-bg);
+}
+
+body {
+    background-color: var(--page-bg);
+    min-height: 100vh;
+}
+
+#container {
+    max-width: var(--content-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--page-gap) 16px 32px;
+}
+
+.mdui-appbar {
+    box-shadow: var(--shadow-sm);
+}
+
+.mdui-appbar .mdui-toolbar {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 8px;
+}
+
+.appbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.appbar-brand .mdui-typo-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.mdui-card,
+.mdui-btn-raised,
+.mdui-panel-item {
+    box-shadow: var(--shadow-sm);
+}
+
+.mdui-card {
+    border-radius: var(--card-radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dashboard-grid .mdui-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+footer {
+    box-shadow: 0 -1px 8px rgba(60, 64, 67, 0.08);
+    background: var(--glass-bg);
+    border-top: 1px solid var(--glass-border);
+    margin-top: 24px;
+}
+
+footer p {
+    margin: 0;
+    opacity: 0.75;
+    font-size: 13px;
+}
+
+st { font-weight: 600; color: #475bca; }
+at { font-weight: 600; color: #ff4081; }
+gt { font-weight: 600; color: #00c853; }
+yt { font-weight: 600; color: #ffbb00; }
+
+.mdui-theme-layout-dark st { color: #9aa9ff; }
+.mdui-theme-layout-dark at { color: #f7a4b9; }
+
+.mt { margin-top: 15px; }
+.mt-s { margin-top: 3px; }
+
+.mdui-card ul.mdui-list { padding-left: 0; }
+
+.text { font-size: 20px; }
+.text_s { font-size: 17px; }
+
+.mdui-switch { height: 20px; line-height: 20px; }
+
+.stop { background: #b6b6b6; }
+.stop td { color: #fff; font-weight: bold; }
+
+.ccp:hover,
+.poh:hover { cursor: pointer; }
+
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.page-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: var(--page-gap);
+    padding: 14px 18px;
+    border-radius: var(--card-radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.page-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.page-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.dashboard-grid {
+    margin: 0 -8px;
+}
+
+.dashboard-grid > .mdui-col {
+    padding: 8px;
+}
+
+.dashboard-grid .mdui-card-primary-title {
+    width: calc(100% - 70px);
+    font-weight: 600;
+}
+
+.server-card .mdui-list-item {
+    min-height: 48px;
+}
+
+.server-card .mdui-progress {
+    height: 6px;
+    border-radius: 999px;
+    margin-top: 6px;
+}
+
+.offline st,
+.offline at,
+.offline gt,
+.offline .progress-text {
+    color: grey;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background: #00c853;
+    vertical-align: middle;
+}
+
+.status-dot.offline {
+    background: #9e9e9e;
+}
+
+.table-panel {
+    overflow-x: auto;
+    border-radius: var(--card-radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.table-panel .mdui-table {
+    margin: 0;
+    background: transparent;
+}
+
+.table-panel .mdui-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table-panel .mdui-table td,
+.table-panel .mdui-table th {
+    padding: 10px 12px;
+}
+
+.table-panel .progress {
+    width: 10%;
+    min-width: 90px;
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: 700;
+    position: relative;
+    top: 4px;
+    left: 6px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    border-radius: var(--card-radius);
+    background: var(--glass-bg);
+    border: 1px dashed var(--glass-border);
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.mdui-theme-layout-dark .empty-state {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 180px);
+}
+
+.auth-wrap .mdui-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.admin-breadcrumb a {
+    text-decoration: none;
+    opacity: 0.75;
+}
+
+.admin-breadcrumb a:hover {
+    opacity: 1;
+}
+
+.admin-page-card {
+    overflow: hidden;
+}
+
+.admin-page-card > .mdui-card-primary {
+    padding: 18px 20px 14px;
+}
+
+.admin-page-card > .mdui-card-content {
+    padding: 8px 20px 20px;
+}
+
+.admin-form-section {
+    margin-bottom: 24px;
+}
+
+.admin-form-section:last-child {
+    margin-bottom: 0;
+}
+
+.admin-form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-form-section-title .mdui-icon {
+    font-size: 20px;
+    opacity: 0.7;
+}
+
+.form-hint {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.72;
+}
+
+.form-hint code {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 12px;
+}
+
+.mdui-theme-layout-dark .form-hint code {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.admin-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.admin-dash-tile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mdui-theme-layout-dark .admin-dash-tile {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-dash-tile:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-dash-tile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(33, 150, 243, 0.12);
+    flex-shrink: 0;
+}
+
+.admin-dash-tile-icon .mdui-icon {
+    font-size: 24px;
+    color: #2196f3;
+}
+
+.admin-dash-tile-body {
+    min-width: 0;
+}
+
+.admin-dash-tile-title {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.admin-dash-tile-desc {
+    margin-top: 2px;
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.admin-table-panel {
+    overflow-x: auto;
+    border-radius: var(--card-radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-table-panel .mdui-table {
+    margin: 0;
+    background: transparent;
+}
+
+.admin-table-panel .mdui-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-table-panel .mdui-table td,
+.admin-table-panel .mdui-table th {
+    padding: 10px 12px;
+}
+
+.mono-textarea {
+    min-height: 240px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.detail-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-gap);
+}
+
+.detail-metrics .mdui-progress {
+    height: 6px;
+    border-radius: 999px;
+    margin-top: 6px;
+}
+
+.chart-panel {
+    border-radius: var(--card-radius);
+    overflow: hidden;
+}
+
+.chart-panel .mdui-panel-item {
+    border-radius: var(--card-radius);
+    margin-bottom: 12px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.chart-panel .mdui-panel-item:last-child {
+    margin-bottom: 0;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 16px;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+.empty-state .mdui-icon {
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+    text-decoration: none;
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+.detail-back:hover {
+    opacity: 1;
+}
+
+#loading {
+    z-index: 10000000;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 50px;
+    width: 50px;
+}
+
+.mdui-fab-wrapper {
+    bottom: 24px;
+    right: 24px;
+}
+
+@media (max-width: 1023.9px) {
+    .mdui-drawer { background-color: #fff; }
+
+    .page-toolbar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+    .page-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 599px) {
+    #container {
+        padding: 12px 10px 24px;
+    }
+    .page-title {
+        font-size: 18px;
+    }
+}

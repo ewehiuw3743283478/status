@@ -1,0 +1,24 @@
+{%set Title=setting.site.name%}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>{%if title%}{{title}} - {%endif%}{{setting.site.name}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" href="https://cdn.staticfile.org/mdui/1.0.2/css/mdui.min.css" as="style">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/mdui/1.0.2/css/mdui.min.css" media="all">
+    <link rel="stylesheet" href="/css/style.min.css">
+</head>
+<body class="mdui-appbar-with-toolbar mdui-theme-accent-blue">
+    <div id="loading" class="mdui-spinner" hidden></div>
+    {%include 'appbar.html'%}
+    <div id="container" class="mdui-container{%if fluid%}-fluid{%endif%}">{%block content%}{%endblock%}</div>
+    {%include "./footer.html"%}
+    <script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
+    <script src="/js/core.js"></script>
+    <script>
+        mdui.mutation();
+    </script>
+    {%block js%}{%endblock%}
+</body>
+</html>

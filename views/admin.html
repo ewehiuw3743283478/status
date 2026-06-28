@@ -1,0 +1,44 @@
+{%set title = "管理"%}
+{%extends "./admin/base.html"%}
+{%block page_title%}管理后台{%endblock%}
+{%block page_subtitle%}<a href="/" class="mdui-text-color-theme-text-secondary">状态面板</a> / 快捷操作{%endblock%}
+{%block admin_content%}
+<ul class="admin-dash-grid">
+    <li>
+        <a href="/admin/servers" class="admin-dash-tile mdui-ripple">
+            <span class="admin-dash-tile-icon"><i class="mdui-icon material-icons">storage</i></span>
+            <span class="admin-dash-tile-body">
+                <span class="admin-dash-tile-title">管理服务器</span>
+                <span class="admin-dash-tile-desc">添加、编辑节点与安装探针</span>
+            </span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/setting" class="admin-dash-tile mdui-ripple">
+            <span class="admin-dash-tile-icon"><i class="mdui-icon material-icons">settings</i></span>
+            <span class="admin-dash-tile-body">
+                <span class="admin-dash-tile-title">系统设置</span>
+                <span class="admin-dash-tile-desc">站点、通知与默认主题</span>
+            </span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/ssh_scripts" class="admin-dash-tile mdui-ripple">
+            <span class="admin-dash-tile-icon"><i class="mdui-icon material-icons">format_align_left</i></span>
+            <span class="admin-dash-tile-body">
+                <span class="admin-dash-tile-title">SSH 脚本片段</span>
+                <span class="admin-dash-tile-desc">WebSSH 快捷命令模板</span>
+            </span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/db" class="admin-dash-tile mdui-ripple">
+            <span class="admin-dash-tile-icon"><i class="mdui-icon material-icons">save_alt</i></span>
+            <span class="admin-dash-tile-body">
+                <span class="admin-dash-tile-title">数据库备份</span>
+                <span class="admin-dash-tile-desc">下载当前配置与数据</span>
+            </span>
+        </a>
+    </li>
+</ul>
+{%endblock%}

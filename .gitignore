@@ -1,0 +1,10 @@
+config.js
+database/db.db
+node_modules
+work.js
+status-agent/build
+dist/
+modules/servers/status-agent
+tokens.json
+log/*.log
+package-lock.json

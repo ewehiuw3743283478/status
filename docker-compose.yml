@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-status}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nekonekostatus}
+      POSTGRES_DB: ${POSTGRES_DB:-status}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-status} -d ${POSTGRES_DB:-status}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ${APP_IMAGE:-ghcr.io/ewehiuw3743283478/status:latest}
+    build: .
+    pull_policy: ${PULL_POLICY:-always}
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5555}:5555"
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-status}:${POSTGRES_PASSWORD:-nekonekostatus}@db:5432/${POSTGRES_DB:-status}
+      PORT: 5555
+      HOST: 0.0.0.0
+      GITHUB_REPO: ${GITHUB_REPO:-ewehiuw3743283478/status}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
