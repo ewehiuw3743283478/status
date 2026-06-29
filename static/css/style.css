@@ -1,3 +1,30 @@
+@font-face {
+    font-family: "Material Icons";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("/fonts/MaterialIcons-Regular.woff2") format("woff2");
+}
+
+.material-icons,
+.mdui-icon.material-icons {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "liga";
+}
+
 :root {
     --page-gap: 20px;
     --card-radius: 16px;
@@ -55,6 +82,25 @@ body {
     max-width: var(--content-max);
     margin: 0 auto;
     padding: 0 8px;
+}
+
+.mdui-btn-icon .mdui-icon.material-icons {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+}
+
+.mdui-card-menu .mdui-icon.material-icons {
+    font-size: 20px;
+    opacity: 0.7;
+}
+
+.mdui-card-menu .mdui-btn-icon .mdui-icon.material-icons {
+    opacity: 1;
+}
+
+.mdui-list-item-icon.mdui-icon.material-icons {
+    font-size: 22px;
 }
 
 .appbar-brand {
@@ -532,6 +578,8 @@ body.mdui-appbar-with-toolbar .auth-wrap {
 
 .svc-tooltip-icon {
     font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
     opacity: 0.55;
     cursor: help;
 }
@@ -614,7 +662,7 @@ body.mdui-appbar-with-toolbar .auth-wrap {
 
 .admin-dash-tile-icon .mdui-icon {
     font-size: 24px;
-    color: #2196f3;
+    color: var(--primary);
 }
 
 .admin-dash-tile-body {

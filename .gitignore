@@ -1,6 +1,7 @@
 config.js
 database/db.db
 node_modules
+terminals/
 work.js
 status-agent/build
 dist/
