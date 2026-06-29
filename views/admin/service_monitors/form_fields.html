@@ -1,0 +1,155 @@
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">label</i>基本信息</h3>
+    <div class="mdui-row">
+        <div class="mdui-col-xs-6 mdui-textfield">
+            <label class="mdui-textfield-label">名称</label>
+            <input class="mdui-textfield-input" type="text" id="form_name" value="{{monitor.name|default('')}}">
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">类型</label>
+            <select class="mdui-select" id="form_type" onchange="toggleMonitorType(this.value)">
+                <option value="tcp" {%if monitor.data.type=='http'%}{%else%}selected{%endif%}>TCP</option>
+                <option value="http" {%if monitor.data.type=='http'%}selected{%endif%}>HTTP</option>
+            </select>
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">可见性</label>
+            <select class="mdui-select" id="form_status">
+                <option value="1" {%if monitor.status|default(1)==1%}selected{%endif%}>正常</option>
+                <option value="2" {%if monitor.status==2%}selected{%endif%}>对外隐藏</option>
+                <option value="0" {%if monitor.status==0%}selected{%endif%}>停用</option>
+            </select>
+        </div>
+    </div>
+    <label class="mdui-switch switch-spaced">
+        <input type="checkbox" id="form_enabled" {%if monitor.data.enabled!=false%}checked{%endif%}>
+        <i class="mdui-switch-icon"></i>
+        启用检测
+    </label>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">public</i>对外展示</h3>
+    <p class="form-hint">状态页不显示真实检测地址，仅展示名称、备注与可选链接（UptimeFlare 模式）。</p>
+    <div class="mdui-textfield">
+        <label class="mdui-textfield-label">展示链接 (可选)</label>
+        <input class="mdui-textfield-input" type="text" id="form_status_page_link" value="{{monitor.data.status_page_link|default('')}}" placeholder="https://status.example.com/">
+    </div>
+    <div class="mdui-textfield">
+        <label class="mdui-textfield-label">备注 / 悬停提示 (可选)</label>
+        <input class="mdui-textfield-input" type="text" id="form_tooltip" value="{{monitor.data.tooltip|default('')}}" placeholder="对外展示的说明文字">
+    </div>
+    <label class="mdui-switch">
+        <input type="checkbox" id="form_hide_latency_chart" {%if monitor.data.hide_latency_chart%}checked{%endif%}>
+        <i class="mdui-switch-icon"></i>
+        隐藏延迟图表（仍显示可用性条）
+    </label>
+</div>
+
+<script type="text/template" id="tpl_tcp_fields">
+    <div class="mdui-row">
+        <div class="mdui-col-xs-8 mdui-textfield">
+            <label class="mdui-textfield-label">检测主机</label>
+            <input class="mdui-textfield-input" type="text" id="form_host" placeholder="10.0.0.1 或 internal.example.com">
+        </div>
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">检测端口</label>
+            <input class="mdui-textfield-input" type="number" id="form_port" value="443">
+        </div>
+    </div>
+</script>
+<script type="text/template" id="tpl_http_fields">
+    <div class="mdui-textfield">
+        <label class="mdui-textfield-label">检测 URL</label>
+        <input class="mdui-textfield-input" type="text" id="form_url" placeholder="https://10.0.0.1/health">
+    </div>
+    <div class="mdui-row">
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">方法</label>
+            <select class="mdui-select" id="form_method">
+                <option value="GET" selected>GET</option>
+                <option value="HEAD">HEAD</option>
+                <option value="POST">POST</option>
+            </select>
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">期望状态码 (0=2xx/3xx)</label>
+            <input class="mdui-textfield-input" type="number" id="form_expect_code" value="0">
+        </div>
+        <div class="mdui-col-xs-6 mdui-textfield">
+            <label class="mdui-textfield-label">响应包含文本 (可选)</label>
+            <input class="mdui-textfield-input" type="text" id="form_expect_body" placeholder="OK">
+        </div>
+    </div>
+</script>
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">gps_fixed</i>检测目标</h3>
+    <p class="form-hint">以下地址仅用于后台探测，不会出现在公开状态页。</p>
+    <div id="form_type_fields">
+    {%if monitor.data.type=='http'%}
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">检测 URL</label>
+            <input class="mdui-textfield-input" type="text" id="form_url" value="{{monitor.data.url|default('')}}" placeholder="https://10.0.0.1/health">
+        </div>
+        <div class="mdui-row">
+            <div class="mdui-col-xs-3 mdui-textfield">
+                <label class="mdui-textfield-label">方法</label>
+                <select class="mdui-select" id="form_method">
+                    <option value="GET" {%if monitor.data.method|default('GET')=='GET'%}selected{%endif%}>GET</option>
+                    <option value="HEAD" {%if monitor.data.method=='HEAD'%}selected{%endif%}>HEAD</option>
+                    <option value="POST" {%if monitor.data.method=='POST'%}selected{%endif%}>POST</option>
+                </select>
+            </div>
+            <div class="mdui-col-xs-3 mdui-textfield">
+                <label class="mdui-textfield-label">期望状态码 (0=2xx/3xx)</label>
+                <input class="mdui-textfield-input" type="number" id="form_expect_code" value="{{monitor.data.expect_code|default(0)}}">
+            </div>
+            <div class="mdui-col-xs-6 mdui-textfield">
+                <label class="mdui-textfield-label">响应包含文本 (可选)</label>
+                <input class="mdui-textfield-input" type="text" id="form_expect_body" value="{{monitor.data.expect_body|default('')}}" placeholder="OK">
+            </div>
+        </div>
+    {%else%}
+        <div class="mdui-row">
+            <div class="mdui-col-xs-8 mdui-textfield">
+                <label class="mdui-textfield-label">检测主机</label>
+                <input class="mdui-textfield-input" type="text" id="form_host" value="{{monitor.data.host|default('')}}" placeholder="10.0.0.1 或 internal.example.com">
+            </div>
+            <div class="mdui-col-xs-4 mdui-textfield">
+                <label class="mdui-textfield-label">检测端口</label>
+                <input class="mdui-textfield-input" type="number" id="form_port" value="{{monitor.data.port|default(443)}}">
+            </div>
+        </div>
+    {%endif%}
+    </div>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">tune</i>高级选项</h3>
+    <div class="mdui-row">
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">超时 (ms)</label>
+            <input class="mdui-textfield-input" type="number" id="form_timeout_ms" value="{{monitor.data.timeout_ms|default(5000)}}">
+        </div>
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">检测间隔 (秒)</label>
+            <input class="mdui-textfield-input" type="number" id="form_interval_sec" value="{{monitor.data.interval_sec|default(60)}}">
+        </div>
+        {%if monitor.id%}
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">监控 ID</label>
+            <input class="mdui-textfield-input ccp" type="text" id="form_id_display" value="{{monitor.id}}" readonly>
+        </div>
+        {%endif%}
+    </div>
+    <p class="form-hint">TCP：连接主机端口。HTTP：发起请求并校验状态码与响应片段。</p>
+    <div class="btn-row">
+        <button type="button" class="mdui-btn mdui-btn-dense btn-tonal" onclick="testMonitorForm()">
+            <i class="mdui-icon material-icons">play_arrow</i> 立即检测
+        </button>
+        <a href="/services" class="mdui-btn mdui-btn-dense btn-tonal" target="_blank">
+            <i class="mdui-icon material-icons">open_in_new</i> 预览状态页
+        </a>
+    </div>
+    <p id="form_test_result" class="form-hint admin-test-result"></p>
+</div>

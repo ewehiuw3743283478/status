@@ -1,0 +1,29 @@
+{%set title = "登录"%}
+{%set login_page = true%}
+{%extends "./base.html"%}
+{%block content%}
+<div class="auth-wrap">
+    <div class="mdui-card auth-card auth-card-elevated">
+        <div class="mdui-card-primary auth-card-header">
+            <div class="mdui-card-primary-title">管理登录</div>
+            <div class="mdui-card-primary-subtitle">{{setting.site.name}}</div>
+        </div>
+        <div class="mdui-card-content auth-card-body">
+            <div class="mdui-textfield" id="password_field">
+                <label class="mdui-textfield-label">管理密码</label>
+                <input class="mdui-textfield-input" type="password" id="password" autocomplete="current-password" placeholder="请输入管理密码">
+            </div>
+        </div>
+        <div class="mdui-card-actions auth-card-actions">
+            <button type="button" class="mdui-btn mdui-btn-raised mdui-color-theme-accent mdui-text-color-white auth-submit" id="login">
+                <i class="mdui-icon material-icons">login</i>
+                <span>登录</span>
+            </button>
+        </div>
+    </div>
+</div>
+{%endblock%}
+{%block js%}
+<script src="/js/md5.min.js"></script>
+<script src="/js/login.js"></script>
+{%endblock%}

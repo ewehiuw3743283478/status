@@ -1,0 +1,54 @@
+<div class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar mdui-appbar-tonal">
+        <a href="/" class="appbar-brand">
+            <div class="mdui-typo-title">
+                <span class="mdui-hidden-xs-down">{{setting.site.name}}</span>
+                <span class="mdui-hidden-sm-up">Status</span>
+            </div>
+        </a>
+        <div class="mdui-toolbar-spacer"></div>
+        {%if admin%}
+        <a href="/services" mdui-tooltip="{content:'服务状态'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">cloud_queue</i>
+        </a>
+        <a href="/admin" mdui-tooltip="{content:'管理后台'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">dashboard</i>
+        </a>
+        <a href="/admin/servers" mdui-tooltip="{content:'管理服务器'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">storage</i>
+        </a>
+        <a href="/admin/service_monitors" mdui-tooltip="{content:'服务监控'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">monitor_heart</i>
+        </a>
+        <a href="/admin/setting" mdui-tooltip="{content:'管理设置'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">settings</i>
+        </a>
+        <a href="/logout" mdui-tooltip="{content:'登出'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">exit_to_app</i>
+        </a>
+        {%else%}
+        <a href="/services" mdui-tooltip="{content:'服务状态'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">cloud_queue</i>
+        </a>
+        {%if not login_page%}
+        <a href="/login" mdui-tooltip="{content:'登录'}" class="mdui-btn mdui-btn-icon">
+            <i class="mdui-icon material-icons">login</i>
+        </a>
+        {%endif%}
+        {%endif%}
+        <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'深色模式'}" onclick="rtx()">
+            <i class="mdui-icon material-icons">brightness_4</i>
+        </button>
+    </div>
+</div>
+<script>
+var rtx_status=Number(localStorage.getItem('rtx'))||0;
+if(rtx_status)document.body.classList.add("mdui-theme-layout-dark");
+function rtx(){
+    if(rtx_status)document.body.classList.remove("mdui-theme-layout-dark");
+    else document.body.classList.add("mdui-theme-layout-dark");
+    rtx_status^=1;
+    localStorage.setItem('rtx',rtx_status);
+    if(window.refreshServiceCharts)window.refreshServiceCharts();
+}
+</script>

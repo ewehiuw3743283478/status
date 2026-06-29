@@ -1,0 +1,103 @@
+{% set title = "新增服务器" %}
+{% extends "../base.html" %}
+
+{% block page_title %}新增服务器{% endblock %}
+{% block page_subtitle %}<a href="/admin/servers" class="mdui-text-color-theme-text-secondary">管理服务器</a> / 新增{% endblock %}
+
+{% block admin_content %}
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">dns</i>基本信息</h3>
+    <div class="mdui-row mdui-row-sm-3">
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">sid</label>
+            <input class="mdui-textfield-input ccp" type="text" id='add_sid' value="{{uuid.v4()}}">
+        </div>
+        <div class="mdui-col-xs-6 mdui-textfield">
+            <label class="mdui-textfield-label">name</label>
+            <input class="mdui-textfield-input" type="text" id='add_name'>
+        </div>
+    </div>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">terminal</i>SSH（可选）</h3>
+    <p class="form-hint">仅在使用「一键安装」或 WebSSH 时需要。探针推送数据不依赖 SSH，可留空后复制安装脚本手动部署。</p>
+    <div class="mdui-row mdui-row-sm-5">
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">域名/IP</label>
+            <input class="mdui-textfield-input" type="text" id='add_ssh_host'>
+        </div>
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">端口</label>
+            <input class="mdui-textfield-input" type="number" id='add_ssh_port' placeholder="22">
+        </div>
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">用户名</label>
+            <input class="mdui-textfield-input" type="text" id='add_ssh_username' placeholder="root">
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">密码 (可选)</label>
+            <input class="mdui-textfield-input" type="password" id='add_ssh_password' autocomplete="off">
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">私钥 (可选)</label>
+            <input class="mdui-textfield-input" type="password" id='add_ssh_privateKey' autocomplete="off">
+        </div>
+    </div>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">api</i>API</h3>
+    <p class="form-hint">保存后将自动生成通讯秘钥。探针通过 HTTP/HTTPS 主动向站点网址推送数据（设置 → 站点网址）。</p>
+    <div class="mdui-row">
+        <div class="mdui-col mdui-textfield">
+            <label class="mdui-textfield-label">指定网卡 (默认统计全部)</label>
+            <input class="mdui-textfield-input" type="text" id='add_device' placeholder="eth0">
+        </div>
+    </div>
+</div>
+
+{% include "./hide_stats_fields.html" %}
+{% endblock %}
+
+{% block admin_menu %}
+<div class="mdui-card-menu">
+    <button class="mdui-btn mdui-btn-icon btn-icon-save" onclick="add()" mdui-tooltip="{content:'保存并添加'}">
+        <i class="mdui-icon material-icons">save</i>
+    </button>
+</div>
+{% endblock %}
+
+{%block js%}
+<script>
+const HIDE_STAT_KEYS={{stat_hide_keys|tojson}};
+function collectHideStats(){
+    return HIDE_STAT_KEYS.filter(k=>E('hide_'+k)&&E('hide_'+k).checked);
+}
+async function add(){
+    var sid=V('add_sid'),name=V('add_name');
+    startloading();
+    var data={
+        ssh:{
+            host:V('add_ssh_host'),
+            port:V('add_ssh_port'),
+            username:V('add_ssh_username'),
+            password:V('add_ssh_password'),
+            privateKey:V('add_ssh_privateKey'),
+        },
+        api:{},
+        device:V('add_device'),
+        hide_stats:collectHideStats(),
+    };
+    var res=await postjson(`/admin/servers/add`,{sid,name,data});
+    endloading();
+    notice(res.data);
+    if(res.status)redirect(`/admin/servers/${res.data}/`);
+}
+document.addEventListener("keydown",(e)=>{
+    if((window.navigator.platform.match("Mac")?e.metaKey:e.ctrlKey)&&e.keyCode==83){
+        e.preventDefault();add();
+    }
+},false);
+</script>
+{%endblock%}

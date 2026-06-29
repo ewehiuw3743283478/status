@@ -1,0 +1,48 @@
+{%set title = "编辑服务监控"%}
+{%extends "admin/base.html"%}
+
+{%block page_title%}{{monitor.name}}{%endblock%}
+{%block page_subtitle%}<a href="/admin/service_monitors" class="mdui-text-color-theme-text-secondary">服务监控</a> / 编辑{%endblock%}
+
+{%block admin_content%}
+<div class="admin-form-section admin-live-panel">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">insights</i>实时状态</h3>
+    <div class="admin-live-grid">
+        <div class="admin-live-item">
+            <span class="admin-live-label">状态</span>
+            <span class="admin-live-value"><span class="status-pill pending" id="live_status">—</span></span>
+        </div>
+        <div class="admin-live-item">
+            <span class="admin-live-label">延迟</span>
+            <span class="admin-live-value"><st id="live_latency">—</st></span>
+        </div>
+        <div class="admin-live-item">
+            <span class="admin-live-label">可用率</span>
+            <span class="admin-live-value"><gt id="live_uptime">—</gt></span>
+        </div>
+        <div class="admin-live-item">
+            <span class="admin-live-label">最近检测</span>
+            <span class="admin-live-value" id="live_time">—</span>
+        </div>
+    </div>
+    <p class="form-hint">检测目标：<code>{{check_target}}</code></p>
+</div>
+
+{%include "./form_fields.html"%}
+{%endblock%}
+
+{%block admin_menu%}
+<div class="mdui-card-menu">
+    <button class="mdui-btn mdui-btn-icon btn-icon-save" onclick="saveMonitorForm()" mdui-tooltip="{content:'保存修改'}">
+        <i class="mdui-icon material-icons">save</i>
+    </button>
+    <button class="mdui-btn mdui-btn-icon btn-icon-danger" onclick="deleteMonitorForm()" mdui-tooltip="{content:'删除'}">
+        <i class="mdui-icon material-icons">delete</i>
+    </button>
+</div>
+{%endblock%}
+
+{%block js%}
+<script>window.MONITOR_FORM_MODE='edit';window.MONITOR_ID='{{monitor.id}}';</script>
+<script src="/js/admin_service_monitor_form.js"></script>
+{%endblock%}

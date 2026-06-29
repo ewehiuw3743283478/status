@@ -1,0 +1,183 @@
+{% set title = "编辑服务器" %}
+{% extends "../base.html" %}
+
+{% block page_title %}{{server.name}}{% endblock %}
+{% block page_subtitle %}<a href="/admin/servers" class="mdui-text-color-theme-text-secondary">管理服务器</a> / 编辑{% endblock %}
+
+{% block admin_content %}
+<input type="text" id='sid' value="{{server.sid}}" hidden>
+<input type="text" id='edit_top' value="{{server.top}}" hidden>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">dns</i>基本信息</h3>
+    <div class="mdui-row">
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">name</label>
+            <input class="mdui-textfield-input" type="text" id='edit_name' value="{{server.name}}">
+        </div>
+        {%set stas={'1':'正常','2':'对外隐藏','0':'不可用'}%}
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">状态</label>
+            <select class="mdui-select" id='edit_status'>
+                {%for sta,name in stas%}
+                <option value="{{sta}}" {%if sta==server.status%}selected{%endif%}>{{name}}</option>
+                {%endfor%}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">terminal</i>SSH（可选）</h3>
+    <p class="form-hint">仅用于一键安装探针与 WebSSH。探针通过 HTTP/HTTPS 主动推送，无需面板连接此 SSH。</p>
+    <div class="mdui-row mdui-row-sm-4">
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">域名/IP</label>
+            <input class="mdui-textfield-input" type="text" id='edit_ssh_host' value="{{server.data.ssh.host}}">
+        </div>
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">端口</label>
+            <input class="mdui-textfield-input" type="number" id='edit_ssh_port' value="{{server.data.ssh.port}}">
+        </div>
+        <div class="mdui-col-xs-2 mdui-textfield">
+            <label class="mdui-textfield-label">用户名</label>
+            <input class="mdui-textfield-input" type="text" id='edit_ssh_username' value="{{server.data.ssh.username}}">
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">密码</label>
+            <input class="mdui-textfield-input" type="password" id='edit_ssh_password' value="{{server.data.ssh.password}}" autocomplete="off">
+        </div>
+        <div class="mdui-col-xs-3 mdui-textfield">
+            <label class="mdui-textfield-label">私钥</label>
+            <input class="mdui-textfield-input" type="password" id='edit_ssh_privateKey' value="{{server.data.ssh.privateKey}}" autocomplete="off">
+        </div>
+    </div>
+</div>
+
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">api</i>API</h3>
+    <p class="form-hint">探针通过 HTTP/HTTPS 主动向 <code>{{panel_url}}</code> 推送数据。修改秘钥后请重新安装或更新探针。</p>
+    <div class="mdui-row">
+        <div class="mdui-col-xs-4 mdui-textfield">
+            <label class="mdui-textfield-label">服务器 ID (sid)</label>
+            <input class="mdui-textfield-input ccp" type="text" id='edit_sid_display' value="{{server.sid}}" readonly>
+        </div>
+        <div class="mdui-col-xs-8 mdui-textfield">
+            <label class="mdui-textfield-label">通讯秘钥</label>
+            <input class="mdui-textfield-input ccp" type="text" id='edit_api_key' value="{{server.data.api.key}}" readonly>
+        </div>
+    </div>
+    <div class="btn-row">
+        <button class="mdui-btn mdui-btn-dense btn-tonal" onclick="copyKey()">
+            <i class="mdui-icon material-icons">content_copy</i> 复制秘钥
+        </button>
+        <button class="mdui-btn mdui-btn-dense btn-tonal-accent mdui-color-theme-accent mdui-text-color-white" onclick="regenKey()">
+            <i class="mdui-icon material-icons">autorenew</i> 重新生成秘钥
+        </button>
+        <button class="mdui-btn mdui-btn-dense btn-tonal" onclick="copyInstallScript()">
+            <i class="mdui-icon material-icons">terminal</i> 复制安装脚本
+        </button>
+    </div>
+    <div class="mdui-row form-field-spaced">
+        <div class="mdui-col mdui-textfield">
+            <label class="mdui-textfield-label">指定网卡 (默认统计全部)</label>
+            <input class="mdui-textfield-input" type="text" id='edit_device' value="{{server.data.device}}" placeholder="eth0">
+        </div>
+    </div>
+    <div class="mdui-expansion-panel mdui-mt-2" mdui-collapse>
+        <div class="mdui-expansion-panel-header">
+            <div class="mdui-expansion-panel-header-title">查看安装脚本</div>
+        </div>
+        <div class="mdui-expansion-panel-body">
+            <textarea id="install_script" class="mdui-textfield-input mono-textarea" readonly>{{install_script}}</textarea>
+        </div>
+    </div>
+</div>
+
+{% include "./hide_stats_fields.html" %}
+{% endblock %}
+
+{% block admin_menu %}
+<div class="mdui-card-menu">
+    <button class="mdui-btn mdui-btn-icon btn-icon-save" onclick="edit()" mdui-tooltip="{content:'保存修改'}">
+        <i class="mdui-icon material-icons">save</i>
+    </button>
+    <button class="mdui-btn mdui-btn-icon btn-icon-danger" onclick="del()">
+        <i class="mdui-icon material-icons">delete</i>
+    </button>
+</div>
+{% endblock %}
+
+{% block admin_actions %}
+<div class="mdui-card-actions">
+    <button class="mdui-btn mdui-btn-dense btn-tonal" onclick="init()" mdui-tooltip="{content:'安装探针'}">安装</button>
+    <button class="mdui-btn mdui-btn-dense btn-tonal-accent mdui-color-theme-accent mdui-text-color-white" onclick="update()" mdui-tooltip="{content:'更新探针后端'}">更新</button>
+</div>
+{% endblock %}
+
+{%block js%}
+<script>
+const HIDE_STAT_KEYS={{stat_hide_keys|tojson}};
+function collectHideStats(){
+    return HIDE_STAT_KEYS.filter(k=>E('hide_'+k)&&E('hide_'+k).checked);
+}
+function copyKey(){copy(V('edit_api_key'));}
+function copyInstallScript(){copy(V('install_script'));}
+async function regenKey(){
+    if(!confirm("重新生成秘钥后，需在目标服务器上重新安装或更新探针。继续?"))return;
+    startloading();
+    var res=await postjson(`./regen-key`);
+    if(res.status){
+        E('edit_api_key').value=res.data;
+        var scriptRes=await fetch(`./install-script`).then(r=>r.json());
+        if(scriptRes.status)E('install_script').value=scriptRes.data;
+        notice("秘钥已更新，请重新安装或更新探针");
+    }else notice(res.data);
+    endloading();
+}
+async function edit(){
+    var sid=V('sid'),name=V('edit_name'),top=Number(V('edit_top')),status=Number(V('edit_status'));
+    startloading();
+    var data={
+        ssh:{
+            host:V('edit_ssh_host'),
+            port:Number(V('edit_ssh_port')),
+            username:V('edit_ssh_username'),
+            password:V('edit_ssh_password'),
+            privateKey:V('edit_ssh_privateKey')
+        },
+        api:{key:V('edit_api_key')},
+        device:V('edit_device'),
+        hide_stats:collectHideStats(),
+    };
+    var res=await postjson(`./edit`,{sid,name,data,top,status});
+    endloading();
+    notice(res.data);
+}
+async function del(){
+    if(!confirm("确认删除?"))return;
+    startloading();
+    var res=await postjson(`./del`);
+    endloading();
+    notice(res.data);
+    if(res.status)redirect('/admin/servers/');
+}
+async function init(){
+    startloading();
+    var res=await postjson(`./init`);
+    notice(res.data);
+    endloading();
+}
+async function update(){
+    startloading();
+    var res=await postjson(`./update`);
+    notice(res.data);
+    endloading();
+}
+document.addEventListener("keydown",(e)=>{
+    if((window.navigator.platform.match("Mac")?e.metaKey:e.ctrlKey)&&e.keyCode==83){
+        e.preventDefault();edit();
+    }
+},false);
+</script>
+{%endblock%}

@@ -1,0 +1,103 @@
+{% set title = "管理服务器" %}
+{% extends "./base.html" %}
+
+{% block page_title %}管理服务器{% endblock %}
+{% block page_subtitle %}<a href="/" class="mdui-text-color-theme-text-secondary">状态面板</a> / 服务器列表{% endblock %}
+
+{% block admin_content %}
+<div class="mdui-table-fluid admin-table-panel">
+<table class="mdui-table">
+    <thead>
+        <tr>
+            <th>排序</th><th>名称</th><th>域名/IP</th><th>通讯秘钥</th><th>状态</th><th>操作</th>
+        </tr>
+    </thead>
+    <tbody id="servers">
+    {%set stas={'1':'<span class="status-pill up">正常</span>','2':'<span class="status-pill hidden">对外隐藏</span>','0':'<span class="status-pill disabled">不可用</span>'}%}
+    {%for server in servers%}
+        <tr sid="{{server.sid}}">
+            <td><i class="handle mdui-icon material-icons poh">drag_handle</i></td>
+            <td class="ccp">{{server.name}}</td>
+            <td class="ccp">{{server.data.ssh.host or '—'}}</td>
+            <td class="ccp mdui-text-truncate cell-truncate" title="{{server.data.api.key or ''}}">{{server.data.api.key or '—'}}</td>
+            <td>{{stas[server.status]|safe}}</td>
+            <td class="admin-row-actions">
+                <a class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'复制安装脚本'}" onclick="copyScript('{{server.sid}}')">
+                    <i class="mdui-icon material-icons">content_copy</i>
+                </a>
+                <a class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'安装'}" onclick="init('{{server.sid}}')">
+                    <i class="mdui-icon material-icons">redo</i>
+                </a>
+                <a href="/admin/servers/{{server.sid}}/" class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'编辑'}">
+                    <i class="mdui-icon material-icons">edit</i>
+                </a>
+                <a class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'删除'}" onclick="del('{{server.sid}}')">
+                    <i class="mdui-icon material-icons">delete</i>
+                </a>
+            </td>
+        </tr>
+    {%endfor%}
+    </tbody>
+</table>
+</div>
+{% endblock %}
+
+{% block admin_fab %}
+<div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
+    <button class="mdui-fab mdui-color-theme-accent">
+        <i class="mdui-icon material-icons">menu</i>
+        <i class="mdui-icon mdui-fab-opened material-icons">clear_all</i>
+    </button>
+    <div class="mdui-fab-dial">
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme-accent" href="/admin/servers/add" mdui-tooltip="{content:'新增服务器'}">
+            <i class="mdui-icon material-icons">add</i>
+        </a>
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme" href="/admin/ssh_scripts" mdui-tooltip="{content:'SSH 脚本片段'}">
+            <i class="mdui-icon material-icons">format_align_left</i>
+        </a>
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme" onclick="saveOrder()" mdui-tooltip="{content:'更新顺序'}">
+            <i class="mdui-icon material-icons">save</i>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{%block js%}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js" integrity="sha384-vxc713BCZYoMxC6DlBK6K4M+gLAS8+63q7TtgB2+KZVn8GNafLKZCJ7Wk2S6ZEl1" crossorigin="anonymous"></script>
+<script>
+new Sortable(E("servers"),{handle:'.handle',animation:150});
+async function saveOrder(){
+    var servers=[];
+    for(var x of document.querySelectorAll("#servers > tr"))
+        servers.push(x.getAttribute('sid'));
+    var res=await postjson("/admin/servers/ord",{servers});
+    notice(res.data);
+}
+document.addEventListener("keydown",(e)=>{
+    if((window.navigator.platform.match("Mac")?e.metaKey:e.ctrlKey)&&e.keyCode==83){
+        e.preventDefault();saveOrder();
+    }
+},false);
+async function copyScript(sid){
+    startloading();
+    var res=await fetch(`/admin/servers/${sid}/install-script`).then(r=>r.json());
+    endloading();
+    if(res.status)copy(res.data);
+    else notice(res.data);
+}
+async function init(sid){
+    startloading();
+    var res=await postjson(`/admin/servers/${sid}/init`);
+    endloading();
+    notice(res.data);
+}
+async function del(sid){
+    if(!confirm("确认删除?"))return;
+    startloading();
+    var res=await postjson(`/admin/servers/${sid}/del`);
+    endloading();
+    notice(res.data);
+    if(res.status)refreshPage();
+}
+</script>
+{% endblock %}

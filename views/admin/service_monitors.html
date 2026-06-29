@@ -1,0 +1,118 @@
+{%set title = "服务监控"%}
+{%extends "./base.html"%}
+
+{%block page_title%}服务监控{%endblock%}
+{%block page_subtitle%}<a href="/services" class="mdui-text-color-theme-text-secondary">服务状态</a> / 管理列表{%endblock%}
+
+{%block admin_content%}
+{%if monitors%}
+<div class="mdui-table-fluid admin-table-panel">
+    <table class="mdui-table">
+        <thead><tr>
+            <th>排序</th><th>名称</th><th>状态</th><th>延迟</th><th>可用率</th><th>类型</th><th>检测目标</th><th>间隔</th><th>可见性</th><th>操作</th>
+        </tr></thead>
+        <tbody id="monitor_rows">
+        {%set stas={'1':'正常','2':'对外隐藏','0':'停用'}%}
+        {%for m in monitors%}
+        <tr data-id="{{m.id}}">
+            <td><i class="handle mdui-icon material-icons poh">drag_handle</i></td>
+            <td><a href="/admin/service_monitors/{{m.id}}">{{m.name}}</a></td>
+            <td id="m_{{m.dom_id}}_status"><span class="status-pill pending">检测中</span></td>
+            <td><st id="m_{{m.dom_id}}_latency">—</st></td>
+            <td><gt id="m_{{m.dom_id}}_uptime">—</gt></td>
+            <td><code>{{m.data.type|upper}}</code></td>
+            <td class="mdui-text-truncate cell-truncate-sm" title="{{m.check_target}}">{{m.check_target}}</td>
+            <td>{{m.data.interval_sec}}s</td>
+            <td>{%if m.status==1%}<span class="status-pill up">正常</span>{%elif m.status==2%}<span class="status-pill hidden">对外隐藏</span>{%else%}<span class="status-pill disabled">停用</span>{%endif%}</td>
+            <td class="admin-row-actions">
+                <a class="mdui-btn mdui-btn-icon" href="/admin/service_monitors/{{m.id}}" mdui-tooltip="{content:'编辑'}">
+                    <i class="mdui-icon material-icons">edit</i>
+                </a>
+                <button class="mdui-btn mdui-btn-icon monitor-action" data-action="test" data-id="{{m.id}}" mdui-tooltip="{content:'立即检测'}">
+                    <i class="mdui-icon material-icons">play_arrow</i>
+                </button>
+                <button class="mdui-btn mdui-btn-icon monitor-action" data-action="del" data-id="{{m.id}}" mdui-tooltip="{content:'删除'}">
+                    <i class="mdui-icon material-icons">delete</i>
+                </button>
+            </td>
+        </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+{%else%}
+<div class="empty-state">
+    <i class="mdui-icon material-icons">cloud_queue</i>
+    <p class="empty-state-title">暂无服务监控</p>
+    <p class="empty-state-desc">添加 TCP 或 HTTP 监控，在此管理可用性检测。</p>
+    <a href="/admin/service_monitors/add" class="mdui-btn btn-tonal-accent mdui-text-color-white mdui-btn-raised mdui-color-theme-accent">添加监控</a>
+</div>
+{%endif%}
+{%endblock%}
+
+{%block admin_fab%}
+<div class="mdui-fab-wrapper" mdui-fab="{trigger: 'hover'}">
+    <button class="mdui-fab mdui-color-theme-accent">
+        <i class="mdui-icon material-icons">menu</i>
+        <i class="mdui-icon mdui-fab-opened material-icons">clear_all</i>
+    </button>
+    <div class="mdui-fab-dial">
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme-accent" href="/admin/service_monitors/add" mdui-tooltip="{content:'添加监控'}">
+            <i class="mdui-icon material-icons">add</i>
+        </a>
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme" onclick="saveOrder()" mdui-tooltip="{content:'保存排序'}">
+            <i class="mdui-icon material-icons">sort</i>
+        </a>
+        <a class="mdui-fab mdui-fab-mini mdui-color-theme" href="/services" mdui-tooltip="{content:'预览状态页'}">
+            <i class="mdui-icon material-icons">open_in_new</i>
+        </a>
+    </div>
+</div>
+{%endblock%}
+
+{%block js%}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js" integrity="sha384-vxc713BCZYoMxC6DlBK6K4M+gLAS8+63q7TtgB2+KZVn8GNafLKZCJ7Wk2S6ZEl1" crossorigin="anonymous"></script>
+<script src="/js/admin_service_monitors.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+    var tbody=E('monitor_rows');
+    if(tbody){
+        new Sortable(tbody,{handle:'.handle',animation:150,onEnd:saveOrder});
+        tbody.addEventListener('click',(e)=>{
+            var btn=e.target.closest('.monitor-action');
+            if(!btn)return;
+            var id=btn.getAttribute('data-id');
+            if(btn.getAttribute('data-action')==='test')quickTest(id);
+            else if(btn.getAttribute('data-action')==='del')quickDel(id);
+        });
+    }
+});
+async function saveOrder(){
+    var ids=[];
+    for(var row of document.querySelectorAll('#monitor_rows > tr'))
+        ids.push(row.getAttribute('data-id'));
+    var res=await postjson('/admin/service_monitors/ord',{monitors:ids});
+    notice(res.data);
+}
+async function quickTest(id){
+    startloading();
+    var res=await postjson('/admin/service_monitors/get',{id});
+    if(!res.status){endloading();return notice(res.data);}
+    var test=await postjson('/admin/service_monitors/test',{data:res.data.data});
+    endloading();
+    if(test.status){
+        notice(test.data.up?'检测成功 · '+test.data.latency_ms+' ms':'检测失败 · '+(test.data.error||'down'));
+    }else notice(test.data);
+}
+async function quickDel(id){
+    var row=document.querySelector('#monitor_rows > tr[data-id="'+id+'"]');
+    var name=row&&row.querySelector('td a')?row.querySelector('td a').textContent:'';
+    if(!confirm('确认删除「'+name+'」？'))return;
+    startloading();
+    var res=await postjson('/admin/service_monitors/del',{id});
+    endloading();
+    notice(res.data);
+    if(res.status)refreshPage();
+}
+</script>
+{%endblock%}

@@ -1,0 +1,150 @@
+{%set title = "节点状态"%}
+{%extends "./base.html"%}
+{%set hidden=hide_stats or []%}
+
+{%block content%}
+{%set active='stats'%}
+{%include "./public_nav.html"%}
+<div class="detail-layout">
+    <a href="/" class="detail-back mdui-text-color-theme-text-secondary">
+        <i class="mdui-icon material-icons">arrow_back</i> 返回面板
+    </a>
+
+    <div class="mdui-card server-card detail-metrics {%if not node.stat%}mdui-text-color-grey offline{%endif%}">
+        <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title mdui-text-truncate">
+                <span class="status-dot {%if not node.stat%}offline{%endif%}"></span>{{node.name}}
+                {%if node.stat%}<span class="status-pill up">在线</span>{%else%}<span class="status-pill down">离线</span>{%endif%}
+            </div>
+        </div>
+        <div class="mdui-card-menu">
+            {%if node.stat and 'host' not in hidden%}
+            <i class="mdui-icon material-icons" id="host">info_outline</i>
+            {%endif%}
+            {%if admin%}
+            <a href="/admin/servers/{{sid}}/" class="mdui-btn mdui-btn-icon">
+                <i class="mdui-icon material-icons">edit</i>
+            </a>
+            <button onclick="webssh('{{sid}}')" class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'web ssh'}">
+                <i class="mdui-icon material-icons">open_in_browser</i>
+            </button>
+            {%endif%}
+        </div>
+        <div class="mdui-card-content">
+            {%if node.stat%}
+            <ul class="mdui-list">
+                {%if 'cpu' not in hidden and node.stat.cpu%}
+                <li class="mdui-list-item">
+                    <i class="mdui-list-item-icon mdui-icon material-icons">memory</i>
+                    <div class="mdui-list-item-content">
+                        <st class="mdui-list-item-title mdui-list-item-one-line">CPU <span id="CPU">{{(100*node.stat.cpu.multi).toFixed(2)}}%</span></st>
+                        <div class="mdui-list-item-text metric-list-text">
+                            {%for usage in node.stat.cpu.single%}
+                            <div class="mdui-progress">
+                                <div id="CPU{{loop.index}}_progress" class="mdui-progress-determinate mdui-color-indigo-400" style="width: {{usage*100}}%;"></div>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </div>
+                </li>
+                {%endif%}
+                {%if 'mem' not in hidden and node.stat.mem%}
+                <li class="mdui-list-item" id="MEM_item">
+                    <i class="mdui-list-item-icon mdui-icon material-icons">straighten</i>
+                    <div class="mdui-list-item-content">
+                        <at class="mdui-list-item-title mdui-list-item-one-line">MEM <span id="MEM">{{node.stat.mem.virtual.usedPercent.toFixed(2)}}%</span></at>
+                        <div class="mdui-list-item-text metric-list-text">
+                            <div class="mdui-progress">
+                                <div id="MEM_progress" class="mdui-progress-determinate mdui-color-pink-400" style="width: {{node.stat.mem.virtual.usedPercent}}%;"></div>
+                            </div>
+                            <div class="mdui-progress">
+                                <div id="SWAP_progress" class="mdui-progress-determinate mdui-color-red-400" style="width: {{node.stat.mem.swap.usedPercent}}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {%endif%}
+                {%if 'bw' not in hidden and node.stat.net%}
+                <li class="mdui-list-item">
+                    <i class="mdui-list-item-icon mdui-icon material-icons">swap_vert</i>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title">下行</div>
+                        <div class="mdui-list-item-text mdui-list-item-one-line metric-list-text">
+                            <st><span id="NET_IN"></span></st>
+                        </div>
+                    </div>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title">上行</div>
+                        <div class="mdui-list-item-text mdui-list-item-one-line metric-list-text">
+                            <at><span id="NET_OUT"></span></at>
+                        </div>
+                    </div>
+                </li>
+                {%endif%}
+                {%if 'traffic' not in hidden and node.stat.net%}
+                <li class="mdui-list-item">
+                    <i class="mdui-list-item-icon mdui-icon material-icons">swap_horiz</i>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title mdui-list-item-one-line">总下行</div>
+                        <div class="mdui-list-item-text metric-list-text">
+                            <st><span id="NET_IN_TOTAL">{{strB(node.stat.net.total.in)}}</span></st>
+                        </div>
+                    </div>
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title mdui-list-item-one-line">总上行</div>
+                        <div class="mdui-list-item-text metric-list-text">
+                            <at><span id="NET_OUT_TOTAL">{{strB(node.stat.net.total.out)}}</span></at>
+                        </div>
+                    </div>
+                </li>
+                {%endif%}
+            </ul>
+            {%else%}
+            <div class="empty-state empty-state-inline">
+                <i class="mdui-icon material-icons">cloud_off</i>
+                <p class="empty-state-title">节点离线</p>
+                <p class="empty-state-desc">探针未上报数据，请检查服务器与网络连接。</p>
+            </div>
+            {%endif%}
+        </div>
+    </div>
+
+    {%if 'charts' not in hidden%}
+    {%include "./statistics.html"%}
+    {%endif%}
+
+    {%if 'devices' not in hidden and node.stat and node.stat.net and node.stat.net.devices%}
+    <div class="table-panel">
+        <table class="mdui-table">
+            <thead>
+                <tr>
+                    <th>网卡</th><th>下行</th><th>上行</th><th>总下行</th><th>总上行</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for device,net in node.stat.net.devices%}
+                <tr>
+                    <td>{{device}}</td>
+                    <td id="net_{{device}}_delta_in"></td>
+                    <td id="net_{{device}}_delta_out"></td>
+                    <td id="net_{{device}}_total_in">{{strB(net.total.in)}}</td>
+                    <td id="net_{{device}}_total_out">{{strB(net.total.out)}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    {%endif%}
+</div>
+{%endblock%}
+
+{%block js%}
+<script>window.__HIDE_STATS={{hidden|tojson}};</script>
+<script src="/js/stat.js"></script>
+{%if 'charts' not in hidden%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0" integrity="sha384-tq9x30vl+bH08RGJ5c7oIlrHDpeF9rYdRFdNQYMOY/VpHt4t0hXYd3Kj23QT9gFN" crossorigin="anonymous"></script>
+<script src="/js/load.js"></script>
+<script src="/js/traffic.js"></script>
+{%endif%}
+{%include "./webssh.html"%}
+{%endblock%}

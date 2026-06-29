@@ -1,0 +1,92 @@
+{%set title = "节点状态"%}
+{%extends "../base.html"%}
+{%block content%}
+{%set active='stats'%}
+{%include "../public_nav.html"%}
+<div class="page-toolbar">
+    <div>
+        <h1 class="page-title">节点状态</h1>
+        <p class="page-subtitle">共 {{stats|length}} 台服务器 · 列表视图 · <span class="poll-live" id="poll_indicator">实时更新</span></p>
+    </div>
+    <div class="page-actions">
+        {%if admin%}
+        <a href="/admin/servers/add" class="mdui-btn mdui-btn-dense mdui-color-theme-accent mdui-text-color-white" mdui-tooltip="{content:'新增服务器'}">
+            <i class="mdui-icon material-icons">add</i>
+        </a>
+        {%endif%}
+        <a href="?theme=card" class="mdui-btn mdui-btn-icon mdui-btn-dense" mdui-tooltip="{content:'切换卡片视图'}">
+            <i class="mdui-icon material-icons">view_module</i>
+        </a>
+    </div>
+</div>
+{%if stats%}
+<div class="table-panel">
+<table class="mdui-table">
+    <thead>
+        <tr>
+            <th>名称</th><th>下行</th><th>上行</th><th>总下行</th><th>总上行</th><th>CPU</th><th>内存</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for sid,node in stats%}
+    {%if node.stat!=-1%}
+    {%set hidden=node.hidden or []%}
+    <tr class="{%if node.stat==0%}offline{%endif%}">
+        <td class="{%if node.stat==0%}mdui-text-color-grey{%endif%}">
+            <span class="status-dot {%if node.stat==0%}offline{%endif%}"></span>
+            <a href="/stats/{{sid}}/">{{node.name}}</a>
+        </td>
+        {%if 'bw' not in hidden%}
+        <td><st><span id="{{sid}}_NET_IN">NaN</span></st></td>
+        <td><at><span id="{{sid}}_NET_OUT">NaN</span></at></td>
+        {%endif%}
+        {%if 'traffic' not in hidden%}
+        <td><st><span id="{{sid}}_NET_IN_TOTAL">NaN</span></st></td>
+        <td><at><span id="{{sid}}_NET_OUT_TOTAL">NaN</span></at></td>
+        {%endif%}
+        {%if 'cpu' not in hidden%}
+        <td class="progress">
+            <div class="mdui-progress table-progress">
+                <div id="{{sid}}_CPU_progress" class="mdui-progress-determinate mdui-color-indigo-400" style="width:0%">
+                    <span id="{{sid}}_CPU" class="mdui-text-truncate progress-text">NaN</span>
+                </div>
+            </div>
+        </td>
+        {%endif%}
+        {%if 'mem' not in hidden%}
+        <td class="progress">
+            <div class="mdui-progress table-progress table-progress-mem" id="{{sid}}_MEM_item">
+                <div id="{{sid}}_MEM_progress" class="mdui-progress-determinate mdui-color-pink-400" style="width:0%">
+                    <span id="{{sid}}_MEM" class="mdui-text-truncate progress-text">NaN</span>
+                </div>
+            </div>
+        </td>
+        {%endif%}
+        <td>
+            {%if 'host' not in hidden%}
+            <i class="mdui-icon material-icons" id="{{sid}}_host_row" mdui-tooltip="{content:'主机信息'}">info_outline</i>
+            {%endif%}
+            {%if admin%}
+            <a class="mdui-btn mdui-btn-icon" href="/admin/servers/{{sid}}/">
+                <i class="mdui-icon material-icons">edit</i>
+            </a>
+            {%endif%}
+        </td>
+    </tr>
+    {%endif%}
+    {%endfor%}
+    </tbody>
+</table>
+</div>
+{%else%}
+<div class="empty-state">
+    <i class="mdui-icon material-icons">dns</i>
+    <p class="empty-state-title">暂无服务器数据</p>
+    <p class="empty-state-desc">在管理后台添加服务器并安装探针后，指标将显示在这里。</p>
+    {%if admin%}<a href="/admin/servers/add" class="mdui-btn btn-tonal-accent mdui-color-theme-accent mdui-text-color-white mdui-btn-raised">添加服务器</a>{%endif%}
+</div>
+{%endif%}
+{%endblock%}
+{%block js%}
+<script src="/js/stats.js"></script>
+{%endblock%}

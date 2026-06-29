@@ -1,0 +1,102 @@
+{%set title = "服务状态"%}
+{%extends "../base.html"%}
+{%block content%}
+{%set active='services'%}
+{%include "../public_nav.html"%}
+<div class="page-toolbar">
+    <div>
+        <h1 class="page-title">服务状态</h1>
+        <p class="page-subtitle">共 {{monitors|length}} 项监控 · 卡片视图 · <span class="poll-live" id="poll_indicator">实时更新</span></p>
+    </div>
+    <div class="page-actions">
+        {%if admin%}
+        <a href="/admin/service_monitors/add" class="mdui-btn mdui-btn-dense mdui-color-theme-accent mdui-text-color-white" mdui-tooltip="{content:'添加服务监控'}">
+            <i class="mdui-icon material-icons">add</i>
+        </a>
+        {%endif%}
+        <a href="?theme=list" class="mdui-btn mdui-btn-icon mdui-btn-dense" mdui-tooltip="{content:'切换列表视图'}">
+            <i class="mdui-icon material-icons">view_list</i>
+        </a>
+    </div>
+</div>
+{%if monitors%}
+<div class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 dashboard-grid service-grid">
+{%for m in monitors%}
+    <div class="mdui-col">
+        <div class="mdui-card service-card" id="{{m.dom_id}}_card">
+            <div class="mdui-card-primary">
+                <div class="mdui-card-primary-title mdui-text-truncate" title="{{m.name}}">
+                    <span class="status-dot" id="{{m.dom_id}}_dot"></span>
+                    {%if m.view.link%}
+                    <a href="{{m.view.link}}" class="svc-name-link" target="_blank" rel="noopener noreferrer">{{m.name}}</a>
+                    {%else%}
+                    {{m.name}}
+                    {%endif%}
+                </div>
+            </div>
+            <div class="mdui-card-menu">
+                {%if m.view.tooltip%}
+                <i class="mdui-icon material-icons svc-tooltip-icon" id="{{m.dom_id}}_tip" title="{{m.view.tooltip}}">info_outline</i>
+                {%endif%}
+                {%if admin%}
+                <a class="mdui-btn mdui-btn-icon" href="/admin/service_monitors/{{m.id}}" mdui-tooltip="{content:'编辑'}">
+                    <i class="mdui-icon material-icons">edit</i>
+                </a>
+                {%endif%}
+            </div>
+            <div class="mdui-card-content">
+                <div class="svc-metrics">
+                    <div class="svc-metric">
+                        <span class="svc-metric-label">状态</span>
+                        <span class="status-pill pending" id="{{m.dom_id}}_STATUS">检测中</span>
+                    </div>
+                    <div class="svc-metric">
+                        <span class="svc-metric-label">延迟</span>
+                        <span class="svc-metric-value"><st id="{{m.dom_id}}_LATENCY">—</st></span>
+                    </div>
+                    <div class="svc-metric">
+                        <span class="svc-metric-label">可用率</span>
+                        <span class="svc-metric-value"><gt id="{{m.dom_id}}_UPTIME">—</gt></span>
+                    </div>
+                    <div class="svc-metric">
+                        <span class="svc-metric-label">检测</span>
+                        <span class="svc-metric-value svc-metric-time" id="{{m.dom_id}}_TIME">—</span>
+                    </div>
+                </div>
+                <div class="svc-uptime-label">90 天可用性</div>
+                <div class="uptime-frame uptime-frame-empty" id="{{m.dom_id}}_bar" aria-label="90 天可用性历史">
+                    <div class="uptime-frame-bars"></div>
+                    <div class="uptime-frame-legend">
+                        <span>90 天前</span>
+                        <span>今天</span>
+                    </div>
+                </div>
+                {%if not m.view.hide_latency_chart%}
+                <div class="svc-chart-wrap">
+                    <div class="svc-chart-title">响应时间</div>
+                    <div class="svc-chart-canvas">
+                        <canvas id="{{m.dom_id}}_chart"></canvas>
+                    </div>
+                </div>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+{%endfor%}
+</div>
+{%else%}
+<div class="empty-state">
+    <i class="mdui-icon material-icons">cloud_queue</i>
+    <p class="empty-state-title">暂无服务监控项</p>
+    <p class="empty-state-desc">添加 TCP 或 HTTP 监控，在此查看可用性与延迟。</p>
+    {%if admin%}<a href="/admin/service_monitors/add" class="mdui-btn btn-tonal-accent mdui-color-theme-accent mdui-text-color-white mdui-btn-raised">添加监控</a>{%endif%}
+</div>
+{%endif%}
+{%endblock%}
+{%block js%}
+{%if has_charts%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0" integrity="sha384-tq9x30vl+bH08RGJ5c7oIlrHDpeF9rYdRFdNQYMOY/VpHt4t0hXYd3Kj23QT9gFN" crossorigin="anonymous"></script>
+{%endif%}
+<script src="/js/uptime-frame.js"></script>
+<script src="/js/services.js"></script>
+{%endblock%}

@@ -1,0 +1,22 @@
+{%set title = "添加服务监控"%}
+{%extends "admin/base.html"%}
+
+{%block page_title%}添加服务监控{%endblock%}
+{%block page_subtitle%}<a href="/admin/service_monitors" class="mdui-text-color-theme-text-secondary">服务监控</a> / 新增{%endblock%}
+
+{%block admin_content%}
+{%include "./form_fields.html"%}
+{%endblock%}
+
+{%block admin_menu%}
+<div class="mdui-card-menu">
+    <button class="mdui-btn mdui-btn-icon btn-icon-save" onclick="saveMonitorForm()" mdui-tooltip="{content:'保存'}">
+        <i class="mdui-icon material-icons">save</i>
+    </button>
+</div>
+{%endblock%}
+
+{%block js%}
+<script>window.MONITOR_FORM_MODE='add';</script>
+<script src="/js/admin_service_monitor_form.js"></script>
+{%endblock%}

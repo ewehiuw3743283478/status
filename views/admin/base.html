@@ -1,0 +1,16 @@
+{%set admin = true%}
+{%extends "../base.html"%}
+{%block content%}
+<div class="mdui-card admin-page-card">
+    <div class="mdui-card-primary">
+        <div class="mdui-card-primary-title">{%block page_title%}{%endblock%}</div>
+        <div class="mdui-card-primary-subtitle admin-breadcrumb">{%block page_subtitle%}<a href="/admin/servers" class="mdui-text-color-theme-text-secondary">管理后台</a>{%endblock%}</div>
+    </div>
+    <div class="mdui-card-content">
+        {%block admin_content%}{%endblock%}
+    </div>
+    {%block admin_menu%}{%endblock%}
+    {%block admin_actions%}{%endblock%}
+</div>
+{%block admin_fab%}{%endblock%}
+{%endblock%}

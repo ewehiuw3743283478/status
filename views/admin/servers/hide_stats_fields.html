@@ -1,0 +1,13 @@
+<div class="admin-form-section">
+    <h3 class="admin-form-section-title"><i class="mdui-icon material-icons">visibility_off</i>对外隐藏指标</h3>
+    <p class="form-hint">勾选的指标仅管理员可见；访客在面板与 API 中看不到对应数据（显示为 —）。不影响探针上报。</p>
+    <div class="hide-stats-grid">
+        {%for opt in hide_stat_options%}
+        <label class="mdui-checkbox">
+            <input type="checkbox" id="hide_{{opt.key}}" {%if opt.key in (hide_stats or [])%}checked{%endif%}>
+            <i class="mdui-checkbox-icon"></i>
+            {{opt.label}}
+        </label>
+        {%endfor%}
+    </div>
+</div>
