@@ -54,7 +54,6 @@ svr.get("/stats/:sid",async(req,res)=>{
     const server=await db.servers.get(sid);
     const hideStats=server?.data?.hide_stats||[];
     const node=filterNode(stats[sid]||{name:server?.name,stat:false},hideStats,req.admin);
-    const ssh_scripts=req.admin?await db.ssh_scripts.all():[];
     const hideCharts=!req.admin&&isHidden(hideStats,"charts");
     res.render("stat",{
         sid,node,
@@ -63,7 +62,6 @@ svr.get("/stats/:sid",async(req,res)=>{
         load_m:hideCharts?[]:await db.load_m.select(sid),
         load_h:hideCharts?[]:await db.load_h.select(sid),
         admin:req.admin,
-        ssh_scripts,
     });
 });
 svr.get("/stats/:sid/data",async(req,res)=>{

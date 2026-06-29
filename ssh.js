@@ -1,5 +1,4 @@
 const {NodeSSH}=require('node-ssh');
-const SSHClient = require("ssh2").Client;
 async function ssh_con(key){
     if(!key.privateKey||key.privateKey=='')delete key.privateKey;
     key.readyTimeout=10000;
@@ -45,33 +44,6 @@ async function exec(key,sh){
         await ssh.dispose();
         return {success:true,data:res.stdout};
     }catch(e){return {success:false,data:e};}
-}
-async function createSocket(key,ws,conf={}){
-    const ssh = new SSHClient();
-    ssh.on("ready",()=>{
-        if(ws)ws.send("\r\n*** SSH CONNECTION ESTABLISHED ***\r\n".toString('utf-8'));
-        else return;
-        ssh.shell((err, stream)=>{
-            if(err){
-                try{ws.send("\n*** SSH SHELL ERROR: " + err.message + " ***\n".toString('utf-8'));}catch{}
-                return;                
-            }
-            if(conf.cols||conf.rows)stream.setWindow(conf.rows,conf.cols);
-            if(conf.sh)stream.write(conf.sh);
-            ws.on("message", (data)=>{stream.write(data);});
-            ws.on("resize",(data)=>{stream.setWindow(data.rows,data.cols)})
-            ws.on("close",()=>{ssh.end()});
-            stream.on("data", (data)=>{try{ws.send(data.toString('utf-8'));}catch{}})
-                .on("close",()=>{ssh.end()});
-        });
-    }).on("close",()=>{
-        try{ws.close()}catch{}})
-    .on("error",(err)=>{
-        try{
-            ws.send("\r\n*** SSH CONNECTION ERROR: " + err.message + " ***\r\n");
-            ws.close();
-        } catch {}
-    }).connect(key);
 }
 function toJSON(x){return JSON.stringify(x);}
 var sshCons={},sshConTime={};
@@ -121,6 +93,5 @@ module.exports={
     exec,spwan,
     ssh_con,ssh_exec,
     Exec,
-    createSocket,
     netStat,pidS,
 }

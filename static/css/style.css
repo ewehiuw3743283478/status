@@ -854,16 +854,6 @@ body.mdui-appbar-with-toolbar .auth-wrap {
     border-radius: var(--card-radius) var(--card-radius) 0 0;
 }
 
-.webssh-dialog .mdui-dialog-actions {
-    border-top: 1px solid var(--glass-border);
-    padding: 8px 12px;
-}
-
-.webssh-dialog .mdui-dialog-content {
-    padding: 0;
-    background: #1a1b26;
-}
-
 .detail-back {
     display: inline-flex;
     align-items: center;

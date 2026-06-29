@@ -25,9 +25,6 @@
             <a href="/admin/servers/{{sid}}/" class="mdui-btn mdui-btn-icon">
                 <i class="mdui-icon material-icons">edit</i>
             </a>
-            <button onclick="webssh('{{sid}}')" class="mdui-btn mdui-btn-icon" mdui-tooltip="{content:'web ssh'}">
-                <i class="mdui-icon material-icons">open_in_browser</i>
-            </button>
             {%endif%}
         </div>
         <div class="mdui-card-content">
@@ -146,5 +143,4 @@
 <script src="/js/load.js"></script>
 <script src="/js/traffic.js"></script>
 {%endif%}
-{%include "./webssh.html"%}
 {%endblock%}

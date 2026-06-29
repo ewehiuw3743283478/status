@@ -20,6 +20,6 @@ function parseNumber(data){
 }
 module.exports={
     pr,strB,parseNumber,
-    uuid:require("uuid"),md5:require("md5"),
+    uuid:require("uuid"),
     turnDate(date){return new Date(date).toLocaleString()},
 }

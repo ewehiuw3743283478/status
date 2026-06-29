@@ -15,7 +15,7 @@
         </div>
         <div class="mdui-col mdui-textfield">
             <label class="mdui-textfield-label">管理密码</label>
-            <input class="mdui-textfield-input" type="password" value="{{setting.password}}" key="password">
+            <input class="mdui-textfield-input" type="password" key="password" autocomplete="new-password" placeholder="留空则不修改">
         </div>
     </div>
 </div>
@@ -107,6 +107,7 @@ async function edit(){
         if(x.type=="number")val=Number(x.value);
         if(x.type=="checkbox")val=x.checked;
         if(x.getAttribute("isarray"))val=val.split(",");
+        if(x.getAttribute("key")==="password"&&!String(val||"").trim())continue;
         gen(setting,x.getAttribute("key").split('.'),val);
     }
     var baseline=JSON.parse(E("setting_data").textContent||"{}");

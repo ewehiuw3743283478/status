@@ -8,7 +8,7 @@ async function login(){
     startloading();
     try{
         var res=await postjson('/login',{
-            password:md5(pwd.value),
+            password:pwd.value,
         });
         endloading();
         if(res.status)redirect('/');

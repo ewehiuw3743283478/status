@@ -1,8 +1,7 @@
 "use strict";
 const {initServer,updateServer,getInstallScript}=require("./func"),
     {normalizeServerData,hasSshConfig}=require("../../lib/server-data"),
-    {STAT_HIDE_KEYS,STAT_HIDE_LABELS}=require("../../lib/hide-stats"),
-    ssh=require("../../ssh");
+    {STAT_HIDE_KEYS,STAT_HIDE_LABELS}=require("../../lib/hide-stats");
 const hideStatOptions=STAT_HIDE_KEYS.map(key=>({key,label:STAT_HIDE_LABELS[key]}));
 module.exports=async svr=>{
 const {db,pr,uuid}=svr.locals;
@@ -112,15 +111,6 @@ svr.get("/admin/servers/:sid",async(req,res)=>{
         stat_hide_keys:STAT_HIDE_KEYS,
         admin:true,
     });
-});
-svr.ws("/admin/servers/:sid/ws-ssh/:data",(ws,req)=>{
-    if(!req.admin){ws.close();return;}
-    var {sid,data}=req.params;
-    db.servers.get(sid).then(server=>{
-        if(!server||!hasSshConfig(server.data)){ws.close();return;}
-        if(data)data=JSON.parse(data);
-        ssh.createSocket(server.data.ssh,ws,data);
-    }).catch(()=>ws.close());
 });
 svr.get("/get-status-agent",async(req,res)=>{
     const {agentBinaryUrl}=require("../../lib/release");

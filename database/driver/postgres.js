@@ -40,11 +40,6 @@ CREATE TABLE IF NOT EXISTS load_h (
     ibw REAL NOT NULL DEFAULT 0,
     obw REAL NOT NULL DEFAULT 0
 );
-CREATE TABLE IF NOT EXISTS ssh_scripts (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    content TEXT NOT NULL DEFAULT ''
-);
 CREATE TABLE IF NOT EXISTS service_monitors (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,

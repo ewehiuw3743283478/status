@@ -1,5 +1,6 @@
 "use strict";
 const {githubReleaseDownloadBase}=require("../lib/release");
+const {migrateStoredPassword}=require("../lib/password");
 module.exports=async(driver)=>{
 const isPg=driver.type==="postgres";
 const valCast=isPg?"::jsonb":"";
@@ -57,6 +58,9 @@ async function init(key,val){
 }
 await init("listen",5555);
 await init("password","nekonekostatus");
+const storedPassword=await setting.get("password");
+const passwordHash=await migrateStoredPassword(storedPassword);
+if(passwordHash!==storedPassword)await setting.set("password",passwordHash);
 await init("site",{name:"Server Status",url:"http://localhost:5555"});
 async function migrateKey(oldKey,newKey){
     const oldVal=await setting.get(oldKey);

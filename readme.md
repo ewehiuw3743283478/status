@@ -26,12 +26,12 @@ Material Design 风格的多服务器监控面板。
 
 - 探针主动推送 CPU、内存、带宽、流量
 - 每台服务器独立 API 密钥（自动生成 / 查看 / 复制 / 重新生成）
-- 一键复制安装脚本、SSH 一键部署探针（SSH 可选，仅用于安装与 WebSSH）
+- 一键复制安装脚本、SSH 一键部署探针（SSH 可选，仅用于一键安装）
 - 负载 / 带宽 / 流量历史图表
 - **按服务器隐藏指标**（CPU、内存、带宽、流量、主机信息、网卡明细、图表等）
 - Telegram 掉线 / 恢复通知
 - 卡片 / 列表主题、Material You 风格 UI、夜间模式
-- WebSSH、SSH 脚本片段
+
 
 ### 服务监控（UptimeFlare 模式）
 
@@ -56,9 +56,10 @@ Material Design 风格的多服务器监控面板。
 | 措施 | 说明 |
 |------|------|
 | **CSRF** | 管理端所有 `POST` 须携带 `X-CSRF-Token`（页面 `<meta name="csrf-token">` 或 `csrf` Cookie） |
+| **管理密码** | 服务端 scrypt 强哈希存储；登录提交明文密码，仅在服务端校验（请使用 HTTPS） |
 | **会话 Cookie** | `httpOnly`、`SameSite=Lax`；HTTPS 或 `FORCE_SECURE_COOKIE=1` 时启用 `Secure` |
 | **安全响应头** | CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等 |
-| **CDN 完整性** | MDUI、Chart.js、SortableJS、xterm 等外链脚本带 SRI |
+| **CDN 完整性** | MDUI、Chart.js、SortableJS 等外链脚本带 SRI |
 | **链接校验** | 服务监控对外链接仅允许 `http://` / `https://` |
 | **反向代理** | 已启用 `trust proxy`；Nginx 须传递 `X-Forwarded-Proto` |
 
@@ -232,7 +233,7 @@ sudo systemctl enable --now status-dashboard
 
 **1. 在面板中创建节点**
 
-管理后台 → **管理服务器** → **新增服务器**，填写名称与 SSH 信息（用于一键安装与 WebSSH），保存后自动生成 **通讯秘钥**。
+管理后台 → **管理服务器** → **新增服务器**，填写名称与 SSH 信息（用于一键安装），保存后自动生成 **通讯秘钥**。
 
 **2. 安装探针（任选其一）**
 
@@ -333,10 +334,6 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
-        # WebSSH WebSocket
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
     }
 }
 ```
@@ -419,8 +416,6 @@ docker compose down -v            # 停止并清空数据库卷（慎用）
 | 服务监控页模板错误 | 旧镜像或缓存 | `docker compose pull && docker compose up -d` 后重试 |
 | Docker 启动失败 | 数据库未就绪或端口占用 | `docker compose logs db app`；更换 `.env` 中 `PORT` |
 | `npm install` 失败 | 缺少编译工具 | 安装 `python3`、`make`、`g++`，或使用 Docker 部署 |
-| WebSSH 无法连接 | 未登录管理员或 SSH 配置错误 | 确认已登录；检查服务器 SSH 主机、端口、密钥 |
-
 ---
 
 ## API
@@ -522,8 +517,6 @@ bash build-docker.sh
 ## 待办
 
 - 硬盘监控
-- WebSSH 优化
-- 管理密码改用服务端强哈希（当前为 MD5）
 
 ## 注意
 

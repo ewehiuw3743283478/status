@@ -8,13 +8,14 @@ const express=require("express"),
     fs=require("fs"),
     path=require("path");
 const core=require("./core"),
-    {pr,md5,uuid}=core;
+    {pr,uuid}=core;
 const {
     sessionCookieOpts,
     ensureCsrfCookie,
     csrfProtection,
     securityHeaders,
 }=require("./lib/security");
+const {verifyPassword}=require("./lib/password");
 const db=await require("./database")();
 let setting=await db.setting.all();
 const svr=express();
@@ -34,8 +35,6 @@ svr.use(express.static(__dirname+"/static"));
 
 svr.engine("html",nunjucks.render);
 svr.set("view engine","html");
-require("express-ws")(svr);
-
 const nunjucksEnv=nunjucks.configure(__dirname+"/views",{
     autoescape:true,
     express:svr,
@@ -62,8 +61,8 @@ svr.get("/login",(req,res)=>{
     else res.render("login",{admin:false,login_page:true});
 });
 svr.post("/login",async(req,res)=>{
-    const {password}=req.body;
-    if(password==md5(await db.setting.get("password"))){
+    const password=String(req.body?.password||"");
+    if(await verifyPassword(password,await db.setting.get("password"))){
         const token=uuid.v4();
         admin_tokens.add(token);
         persistTokens();
