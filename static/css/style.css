@@ -42,12 +42,13 @@ body {
 
 .mdui-appbar {
     box-shadow: var(--shadow-sm);
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
 }
 
 .mdui-appbar-tonal {
-    background: var(--glass-bg) !important;
+    background: transparent !important;
     color: inherit;
-    border-bottom: 1px solid var(--glass-border);
 }
 
 .mdui-appbar .mdui-toolbar {
