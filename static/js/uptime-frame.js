@@ -1,4 +1,5 @@
 function uptimeBarColor(pct){
+    if(pct==null)return '#bdbdbd';
     var n=Number(pct);
     if(isNaN(n))return '#bdbdbd';
     if(n>=99.9)return '#3bd671';
